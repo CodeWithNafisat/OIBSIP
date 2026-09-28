@@ -1,87 +1,163 @@
-# Credit Card Fraud Detection Using Machine Learning
+# Credit Card Fraud Detection
 
-## Business Problem
-
-Credit card fraud is a major challenge for financial institutions because fraudulent transactions are relatively rare but can result in significant financial losses and customer dissatisfaction.
-
-The goal of this project was to develop a machine-learning model that can identify potentially fraudulent credit-card transactions while maintaining a reasonable balance between **detecting fraud** and **avoiding false alarms on legitimate transactions**.
-
-This is particularly challenging because fraud represents only a very small percentage of all transactions. A model could achieve very high accuracy simply by predicting that almost every transaction is legitimate, so accuracy alone is not an appropriate measure of success.
+A machine-learning project for detecting fraudulent credit-card
+transactions under severe class imbalance.
 
 ## Project Overview
 
-This project uses machine learning to analyze credit-card transactions and classify them as either **legitimate or fraudulent**.
+Credit-card fraud detection is a highly imbalanced classification
+problem. Fraud represents only a very small proportion of transactions,
+so accuracy alone is not a useful measure of model performance.
 
-The analysis covers the complete workflow, from understanding and cleaning the dataset to exploratory analysis, handling class imbalance, comparing machine-learning models, selecting the best-performing approach, tuning the classification threshold, and evaluating the final model on unseen transactions.
+This project applies **EDA, data cleaning, preprocessing, imbalance
+handling, cross-validation, threshold tuning, and model evaluation** to
+identify fraudulent transactions while controlling false-positive
+alerts.
 
-The project focuses primarily on **precision, recall, F1-score, and PR-AUC**, which are more useful measures for a highly imbalanced fraud-detection problem.
+## Business Problem
+
+Financial institutions need to detect fraudulent transactions while
+avoiding unnecessary alerts on legitimate customers.
+
+The key challenge is balancing:
+
+-   **Recall:** catching fraudulent transactions.
+-   **Precision:** reducing false fraud alerts.
+
+For this reason, the project focuses on **PR-AUC, precision, recall, and
+F1-score**, alongside ROC-AUC.
 
 ## Dataset
 
-The dataset contains **284,807 transactions across 31 columns**.
+**Source:** [Credit Card Fraud Detection ---
+Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
 
-It includes:
+The dataset contains:
 
-* **28 anonymized numerical features (V1–V28)**
-* **Time** — the elapsed time associated with each transaction
-* **Amount** — the transaction value
-* **Class** — the target variable indicating legitimate or fraudulent transactions
+-   284,807 original transactions
+-   30 predictor variables
+-   `Time`, `Amount`, and anonymized features `V1–V28`
+-   `Class` as the fraud target
 
-The dataset contains no missing values, but **1,081 duplicate records** were identified and removed during data cleaning.
+After removing **1,081 duplicates**, the dataset contained **283,726
+transactions**, including **473 fraud cases (0.167%)**.
 
-After cleaning, fraudulent transactions represented approximately **0.17%** of the data, compared with approximately **99.83% legitimate transactions**, confirming the severe class imbalance.
+## Analysis & Methodology
 
-## What I Did
+The workflow was:
 
-I first performed a data-quality audit to check the dataset structure, missing values, duplicate records, and basic statistics.
+``` text
+Data Audit
 
-I then carried out exploratory data analysis to understand fraud patterns. This included examining the distribution of legitimate versus fraudulent transactions, transaction activity by hour, fraud rates across different hours, and transaction amounts.
+Duplicate Removal & EDA
 
-The analysis showed that transaction activity was highest around **Hour 21**, while the highest observed hourly fraud rate occurred around **Hour 2**. Fraudulent transactions also had a higher average transaction amount than legitimate transactions, although their median amount was lower, indicating that fraudulent transaction values were highly variable.
+Stratified Train/Test Split
+   
+Scaling
+   
+Imbalance Handling
+   
+5-Fold Cross-Validation
+   
+Model Selection
+   
+Threshold Tuning
+   
+Final Test Evaluation
+```
 
-For the machine-learning stage, I compared **Logistic Regression, Decision Tree, and Random Forest** models. I also tested different approaches for dealing with the severe class imbalance, including baseline models, class weighting, and SMOTE combined with undersampling.
+### Exploratory Data Analysis
 
-The models were evaluated using **5-fold stratified cross-validation**, with PR-AUC used as the main metric for model comparison.
+The analysis examined:
 
-The strongest overall model configuration was a **Random Forest with balanced class weights**, which achieved a cross-validated PR-AUC of approximately **0.844**.
+-   Fraud vs. legitimate transaction distribution
+-   Transaction amount distributions
+-   Fraud rate across derived transaction hours
+-   Class imbalance and its impact on model evaluation
 
-Rather than automatically using the standard 0.50 classification threshold, I also examined different probability thresholds to find a more appropriate balance between fraud detection and false alerts. A threshold of **0.20** was selected based on the precision and recall requirements used in the analysis.
+### Models Tested
+
+Three models were compared:
+
+-   Logistic Regression
+-   Decision Tree
+-   Random Forest
+
+For each model, I evaluated baseline, class-weighted, and SMOTE-based
+approaches.
+
+SMOTE and random undersampling were applied inside the training pipeline
+to avoid data leakage.
 
 ## Results
 
-On the held-out test set, the final model achieved:
+Random Forest baseline achieved the strongest cross-validation PR-AUC
+and was selected for final testing.
 
-| Metric    |     Result |
-| --------- | ---------: |
-| Accuracy  | **99.94%** |
-| Precision | **85.19%** |
-| Recall    | **80.99%** |
-| F1-score  | **83.03%** |
+  -----------------------------------------------------------------------------
+  Model              PR-AUC      ROC-AUC    Precision       Recall           F1
+  ------------ ------------ ------------ ------------ ------------ ------------
+  **Random       **0.8015**       0.9265   **0.8370**   **0.7958**   **0.8159**
+  Forest**                                                         
 
-The result means the model was able to identify approximately **81% of fraudulent transactions** while maintaining approximately **85% precision** among transactions classified as fraudulent.
+  Logistic           0.7040   **0.9647**       0.7895       0.7394       0.7636
+  Regression                                                       
+  -----------------------------------------------------------------------------
 
-The high accuracy is less important than the precision, recall, and F1-score because of the extreme imbalance in the dataset.
+The final Random Forest used a tuned probability threshold of **0.170**.
+                     
+The model correctly detected **113 fraudulent transactions**, generated
+**22 false positives**, and missed **29 fraud cases** on the held-out
+test set.
+
+> Although Logistic Regression had a higher ROC-AUC, Random Forest
+> achieved better PR-AUC, precision, recall, and F1-score on the test
+> set. This highlights why PR-AUC is particularly useful for highly
+> imbalanced fraud detection.
+
+## Key Findings
+
+-   Fraud accounted for only **0.167%** of the cleaned dataset.
+-   Accuracy would be misleading for this problem.
+-   Random Forest provided the strongest overall precision-recall
+    performance among the tested final models.
+-   Threshold tuning improved the model's ability to balance fraud
+    detection and false alerts.
+-   The most influential Random Forest features included **V17, V12,
+    V14, V16, and V10**. Because the features are anonymized, their
+    business meaning cannot be directly interpreted.
 
 ## Tools Used
 
-This project was developed using **Python and Jupyter Notebook**, with:
+**Python · Pandas · NumPy · Matplotlib · Seaborn · Scikit-learn ·
+imbalanced-learn · Jupyter Notebook**
 
-**Pandas** for data manipulation and analysis, **NumPy** for numerical operations, **Matplotlib and Seaborn** for visualization, **Scikit-learn** for preprocessing, model development, cross-validation and evaluation, and **imbalanced-learn** for SMOTE and undersampling.
+## Project Structure
 
-## Recommendations
+``` text
+DataAnalytics-L2-FraudDetection/
+├── README.md
+├── FraudDetection.ipynb
 
-The model provides a strong baseline for fraud detection, but several improvements would make the project more suitable for real-world use.
+```
 
-First, threshold selection should ideally be based on the actual business cost of **missed fraud versus false alerts**, rather than only predefined precision and recall targets.
+## Reproducibility
 
-The model should also be tested using **time-based validation**, since fraud patterns can change over time and a future transaction may not behave like a randomly selected historical transaction.
+1.  Download `creditcard.csv` from the [Kaggle
+    dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud).
+2.  Place the dataset in the expected project location.
+3.  Install the required Python libraries.
+4.  Open and run `FraudDetection_clean.ipynb`.
 
-Adding **feature-importance and model-explainability analysis** would help investigators understand why transactions are being flagged.
+The notebook uses `RANDOM_STATE = 42`.
 
-Finally, a real fraud-detection system would require continuous monitoring for **changes in fraud patterns, data drift, false-positive rates, and model performance**, with periodic retraining when necessary.
+## Conclusion
 
-## Key Takeaway
+This project demonstrates an end-to-end approach to fraud detection
+under extreme class imbalance. The final Random Forest achieved **0.8015
+PR-AUC, 0.8370 precision, 0.7958 recall, and 0.8159 F1-score** on the
+held-out test set.
 
-This project demonstrates how machine learning can be applied to a highly imbalanced fraud-detection problem, moving beyond simple accuracy to focus on the metrics that matter for identifying rare fraudulent transactions.
-
-The analysis shows that **Random Forest with balanced class weights**, combined with an appropriately tuned classification threshold, provides a useful starting point for detecting fraudulent transactions while maintaining a practical balance between recall and precision.
+The main practical lesson is that fraud detection should be evaluated
+using metrics that reflect the minority-class problem, rather than
+relying on accuracy alone.
