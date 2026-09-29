@@ -20,11 +20,16 @@ alerts.
 ---
 ## Quick Summary
 
-**Problem**:  Find fraud in card transactions when only 0.17% are fraud 
+**Problem**:  Find fraud in card transactions when only 0.17% are fraud
+
 **Data**: 283,726 transactions after cleaning ([Kaggle dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)) 
+
 **What I did**:  Cleaned the data, compared 9 model setups, picked the best one, tuned its threshold, and tested it once on unseen data 
+
 **Best model**:  Random Forest (200 trees) 
+
 **Test results**:  PR-AUC 0.8015, Recall 0.7958, Precision 0.8370, F1 0.8159 
+
 **Compared against**: Logistic Regression: PR-AUC 0.7040, Recall 0.7394, Precision 0.7895, F1 0.7636 
 
 ---
@@ -47,7 +52,7 @@ A good model has to balance both. So I focused on **recall** (how much fraud we 
 Source: [Credit Card Fraud Detection on Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
 
 Original transactions was 284,807
-Columns: `V1` to `V28` (anonymized numbers), `Time`, `Amount`, and `Class` (1 = fraud) 
+Columns: V1 to V28 (anonymized numbers), Time, Amount, and Class (1 = fraud) 
 Missing values: None
 Duplicates removed: 1,081 records
 Rows after cleaning: 283,726 
@@ -97,17 +102,7 @@ I compared them with 5-fold cross-validation on the training set.
 
 Recall, precision and F1 use the default 0.5 threshold.
 
-| Setup | PR-AUC | Recall | Precision | F1 |
-|---|---|---|---|---|
-| **Random Forest, baseline** | **0.8435** | 0.7644 | 0.9414 | 0.8432 |
-| Random Forest, class weights | 0.8394 | 0.7917 | 0.9232 | 0.8519 |
-| Random Forest, SMOTE | 0.8197 | 0.8460 | 0.7655 | 0.8031 |
-| Logistic Regression, baseline | 0.7564 | 0.6314 | 0.8712 | 0.7306 |
-| Logistic Regression, SMOTE | 0.7541 | 0.8915 | 0.0997 | 0.1790 |
-| Logistic Regression, class weights | 0.7535 | 0.9125 | 0.0561 | 0.1057 |
-| Decision Tree, baseline | 0.7500 | 0.7646 | 0.8910 | 0.8208 |
-| Decision Tree, class weights | 0.5100 | 0.8369 | 0.1255 | 0.2147 |
-| Decision Tree, SMOTE | 0.4627 | 0.8430 | 0.1022 | 0.1820 |
+<img width="1366" height="768" alt="Screenshot (17)" src="https://github.com/user-attachments/assets/3eea30da-bdcb-4784-993e-3ccacb052e84" />
 
 ### What this told me
 
@@ -133,6 +128,8 @@ The 0.80 targets are only a stand-in. In a real bank, the threshold should be se
 ## Final Test Results
 
 The threshold was fixed before touching the test set, and the test set was used once.
+
+<img width="1365" height="592" alt="Screenshot (16)" src="https://github.com/user-attachments/assets/5d271cde-761b-4354-9414-b0e035b781fd" />
 
 
 Random Forest wins on PR-AUC, recall, precision and F1. Logistic Regression has the higher ROC-AUC, but ROC-AUC is inflated by the huge number of normal transactions. That is why PR-AUC was the better score to decide with.
@@ -168,6 +165,7 @@ Python, pandas, NumPy, scikit-learn, imbalanced-learn, matplotlib, seaborn, Jupy
 DataAnalytics-L2-FraudDetection/
 ├── README.md
 ├── FraudDetection.ipynb
+├── Screenshots
 
 ```
 
