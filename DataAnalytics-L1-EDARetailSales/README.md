@@ -116,6 +116,7 @@ Charts produced in the notebook include:
 - Correlation heatmap
 - Revenue and quantity by state
 
+<img width="1366" height="768" alt="Screenshot (234)" src="https://github.com/user-attachments/assets/ccc8160d-a0f0-487c-9865-05a04253c96e" />
 
 ---
 
