@@ -4,13 +4,13 @@
 
 ---
 
-## 📌 Project Overview
+##  Project Overview
 
 A retail business needs to know **when it sells, what it sells, who buys, and where revenue comes from**. This project takes two messy raw datasets (customers and transactions), cleans and merges them, and runs an end-to-end exploratory analysis. The result is a set of data-backed findings and recommendations on seasonal planning, product focus, customer targeting and regional strategy.
 
 ---
 
-## 🎯 Business Questions
+##  Business Questions
 
 1. How has revenue changed over time, and is there a seasonal pattern?
 2. Who are the customers (age, gender), and which segments drive the most revenue?
@@ -20,7 +20,7 @@ A retail business needs to know **when it sells, what it sells, who buys, and wh
 
 ---
 
-## 🗂️ Dataset
+##  Dataset
 The dataset was obtained from Kaggle:
 
 [Retail Customer & Transaction Dataset](https://www.kaggle.com/datasets/raghavendragandhi/retail-customer-and-transaction-dataset)
@@ -34,7 +34,7 @@ The two tables were joined on `customer_id`. The final cleaned dataset is about 
 
 ---
 
-## 🧹 Data Cleaning & Preparation
+##  Data Cleaning & Preparation
 
 Data quality issues were the biggest hurdle in this project. Each step below was a deliberate decision:
 
@@ -59,7 +59,7 @@ Data quality issues were the biggest hurdle in this project. Each step below was
 
 ---
 
-## 🔍 Exploratory Analysis
+##  Exploratory Analysis
 
 - **Descriptive statistics:** mean, median, mode and standard deviation for the numeric variables.
 - **Time series:** yearly, monthly and quarterly revenue trends.
@@ -70,31 +70,31 @@ Data quality issues were the biggest hurdle in this project. Each step below was
 
 ---
 
-## 💡 Key Insights
+##  Key Insights
 
-### 📈 Revenue Trends
+###  Revenue Trends
 - Revenue grew steadily from **692,785 (2020)** to **7,466,081 (2024)**.
 - 2025 shows a sharp drop to **1,031,550**. The analysis flags this for investigation, because it could reflect a genuine decline or an incomplete year of data.
 - **Q4 is the strongest quarter** (7,454,433) and **Q2 the weakest** (3,713,007). **December (3,066,801)** and **November (2,900,460)** are the peak months, and **March** is the lowest (1,155,325). This suggests a seasonal end-of-year pattern.
 
-### 👥 Customers
+###  Customers
 - Adults (30–59) are the core segment, generating **15.1M** in revenue against **6.1M** from young adults.
 - **Female customers generate the most revenue** (10.8M vs 9.7M for males). **Adult females are the top segment** at 7.7M.
 - The age groups were defined as under 30, 30–59 and 60+. The 60+ group had no records, so the customer base is concentrated in younger and middle-aged buyers.
 
-### 🛍️ Products
+###  Products
 - **Furniture is the top revenue category** (4.7M), followed by **Smartphones** (4.0M) and **Laptops** (3.0M).
 - **Best-selling ≠ highest-earning:** the iPhone 13 leads on units sold (1,061) with 847,855 in revenue, but the **Bed Frame** earns the most revenue (1,023,041) from only 938 units.
 - **Price is the dominant revenue driver.** It has a near-perfect correlation with revenue, while quantity, discount and age show little to none.
 
-### 🗺️ Regions
+###  Regions
 - **California is the top state** on both revenue (3.9M) and quantity (6,563), followed by **Texas** (2.8M revenue).
 - **Massachusetts is the weakest state** (600,608 revenue, 1,055 units).
 - Within California, **San Diego leads on revenue** (855,505) while **Los Angeles leads on volume** (1,440 units).
 
 ---
 
-## ✅ Business Recommendations
+##  Business Recommendations
 
 1. **Plan for Q4.** Increase inventory and marketing ahead of November and December, the highest-revenue months.
 2. **Prioritise high-value categories.** Give more attention to Furniture, Smartphones and Laptops, which bring in the most revenue.
@@ -105,7 +105,7 @@ Data quality issues were the biggest hurdle in this project. Each step below was
 
 ---
 
-## 📊 Visualizations
+##  Visualizations
 
 Charts produced in the notebook include:
 
@@ -120,7 +120,7 @@ Charts produced in the notebook include:
 
 ---
 
-## 🛠️ Tools & Tech Stack
+##  Tools & Tech Stack
 
 | Category | Tools |
 |---|---|
