@@ -1,36 +1,16 @@
 # Credit Card Fraud Detection
 
-A machine learning project that finds fraudulent credit card transactions, even though fraud is very rare in the data.
+Fraud makes up just 0.17% of the transactions in this dataset, which means a model can look excellent while catching nothing. This project is about building a detector that holds up under that imbalance and being able to trust its numbers.
 
-**Final result:** The Random Forest model caught **113 of 142 frauds (79.6%)** in the test set. About **84% of the transactions it flagged were truly fraud**, with only **22 false alarms** out of roughly 85,000 transactions.
+The final Random Forest caught **113 of the 142 frauds** in the test set (79.6% recall). About **84% of the transactions it flagged were genuine fraud**, with only **22 false alarms** across roughly 85,000 transactions. I compared nine model setups, chose between them using PR-AUC, tuned the decision threshold on training data only, and used the test set once.
 
----
+## The Problem
 
-## Project Overview
+Only about 1 in 600 transactions is fraud. A model that calls everything legitimate would be about 99.8% accurate and catch no fraud at all, so accuracy is useless as a yardstick here.
 
-Credit-card fraud detection is a highly imbalanced classification
-problem. Fraud represents only a very small proportion of transactions,
-so accuracy alone is not a useful measure of model performance.
+The errors also carry different costs. A missed fraud costs the bank the money, plus chargebacks and customer trust. A false alarm wastes an analyst's time and can block a real customer. The model has to balance the two.
 
-This project applies **EDA, data cleaning, preprocessing, imbalance
-handling, cross-validation, threshold tuning, and model evaluation** to
-identify fraudulent transactions while controlling false-positive
-alerts.
-
----
-## Quick Summary
-
-**Problem**:  Find fraud in card transactions when only 0.17% are fraud
-
-**Data**: 283,726 transactions after cleaning ([Kaggle dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)) 
-
-**What I did**:  Cleaned the data, compared 9 model setups, picked the best one, tuned its threshold, and tested it once on unseen data 
-
-**Best model**:  Random Forest (200 trees) 
-
-**Test results**:  PR-AUC 0.8015, Recall 0.7958, Precision 0.8370, F1 0.8159 
-
-**Compared against**: Logistic Regression: PR-AUC 0.7040, Recall 0.7394, Precision 0.7895, F1 0.7636 
+That shaped how I measured everything. I tracked recall (how much fraud is caught), precision (how many alerts are real), F1 and PR-AUC, and used PR-AUC as the main score for choosing a model because it is not flattered by the mass of normal transactions.
 
 ---
 
@@ -49,38 +29,29 @@ A good model has to balance both. So I focused on **recall** (how much fraud we 
 
 ## The Data
 
-Source: [Credit Card Fraud Detection on Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+The data comes from the [Credit Card Fraud Detection dataset on Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud): 284,807 transactions with 28 anonymized features (`V1` to `V28`), plus `Time`, `Amount` and the `Class` label (1 means fraud). There were no missing values, but 1,081 duplicate records, which I removed. That leaves 283,726 transactions, 473 of them fraud (0.167%).
 
-Original transactions was 284,807
-Columns: V1 to V28 (anonymized numbers), Time, Amount, and Class (1 = fraud) 
-Missing values: None
-Duplicates removed: 1,081 records
-Rows after cleaning: 283,726 
-Fraud cases: 473 (0.167%) 
-Train / test split:  198,608 / 85,118 (70/30, same fraud rate in both) 
+The split is 70/30, giving 198,608 training rows and 85,118 test rows, with the same fraud rate in both.
 
----
+## How I Kept the Results Trustworthy
 
-## How I Kept the Results 
+Most of the effort went into making sure the numbers can be believed.
 
-Most of the work here was making sure the results can be trusted.
+- Duplicates were removed before splitting, so no row can appear in both train and test.
+- The test set stayed untouched until the final evaluation.
+- Scaling and resampling sit inside a single pipeline, so they only ever learn from training data.
+- Models were chosen on PR-AUC, not accuracy.
+- Differences smaller than the natural wobble between CV folds were treated as ties, not wins.
+- The threshold was tuned on out-of-fold training predictions, never on the test set.
 
-- **Removed duplicates before splitting**, so the same row can't appear in both train and test.
-- **Split the data first**, and kept the test set untouched until the very end.
-- **Put scaling and resampling inside one pipeline**, so they only ever learn from training data.
-- **Chose the model using PR-AUC**, not accuracy.
-- **Treated small differences as ties.** If two models differed by less than the natural wobble between CV folds, I did not call one the winner.
-- **Tuned the threshold on training data only** (using out-of-fold predictions), never on the test set.
+## What the Data Showed
 
----
+The class imbalance is stark: 99.83% normal against 0.17% fraud.
 
-## What I Found in the Data
+Fraud has a higher average amount than normal transactions (123.87 against 88.41) but a lower median (9.82 against 22.00). A few large frauds drag the average up, so the median is the fairer comparison.
 
-- **Very unbalanced:** 99.83% normal vs 0.17% fraud.
-- **Amounts:** Fraud has a higher average amount (123.87 vs 88.41) but a lower median (9.82 vs 22.00). A few big frauds pull the average up, so the median tells the fairer story.
-- **Time of day:** The fraud rate changes a lot by hour, from 0.05% to 1.45%. But `Time` only counts seconds since the first transaction, so it is not a real clock time. I used this for exploring only and did not use the hour as a model feature.
+The fraud rate also varies a lot by hour, from 0.05% to 1.45%. However, `Time` only counts seconds since the first transaction and is not a real clock time, so I used it for exploration only and kept the hour out of the model.
 
----
 
 ## Models I Tested
 
@@ -106,11 +77,13 @@ Recall, precision and F1 use the default 0.5 threshold.
 
 ### What this told me
 
-1. **Resampling and class weights did not make the models better at ranking fraud.** For Random Forest, the baseline and class-weighted versions were basically tied (0.8435 vs 0.8394). For Logistic Regression, all three were nearly the same.
-2. **They mostly just moved the cutoff.** For Logistic Regression, recall jumped to about 0.9 but precision dropped to 0.06 to 0.10. That means it flagged far more transactions, not that it got smarter. So I handled this trade-off with threshold tuning instead.
-3. **They made the Decision Tree worse.** Its PR-AUC fell from 0.75 to 0.51 and 0.46.
+Three findings drove the next decisions:
 
-I picked **Random Forest (baseline)**. Its class-weighted version was a statistical tie, so this choice doesn't depend on that setting.
+1. **Resampling and class weights did not improve the ranking of fraud.** For Random Forest, the baseline and class-weighted versions were effectively tied on PR-AUC (0.8435 against 0.8394), and Logistic Regression's three versions were nearly identical.
+2. **What they did was shift the cutoff.** Logistic Regression's recall rose to about 0.9, but precision fell to between 0.06 and 0.10. It was flagging far more transactions, not discriminating better. That made the threshold a separate decision to tune directly.
+3. **They hurt the Decision Tree.** Its PR-AUC fell from 0.75 to 0.51 and 0.46.
+
+I went with the baseline Random Forest. Its class-weighted twin was a statistical tie, so the choice does not hinge on that setting.
 
 ---
 
