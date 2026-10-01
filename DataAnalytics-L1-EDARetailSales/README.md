@@ -77,11 +77,16 @@ Selling the most units does not mean earning the most. The iPhone 13 leads on un
 
 Price is the main driver of revenue. It correlates almost perfectly with revenue, while quantity, discount and age show little to no relationship. Since revenue is defined as quantity × price, part of that result comes from how revenue is built, but it still shows price varies far more than the other inputs.
 
+<img width="1366" height="768" alt="Screenshot (43)" src="https://github.com/user-attachments/assets/db8609f6-92e4-4bed-bf74-31ab9fc2117f" />
+
+
 ### Regions
 
 California is the top state on both revenue (3.9M) and quantity (6,563), followed by Texas at 2.8M in revenue. Massachusetts is the weakest, with 600,608 in revenue and 1,055 units.
 
 Inside California, the two leading cities lead on different measures: San Diego has the highest revenue (855,505) while Los Angeles has the highest volume (1,440 units).
+
+<img width="1366" height="768" alt="Screenshot (45)" src="https://github.com/user-attachments/assets/05907991-6979-4140-abbd-e5a67ca0afb0" />
 
 
 ## Recommendations
