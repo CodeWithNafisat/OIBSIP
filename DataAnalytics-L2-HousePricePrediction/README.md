@@ -12,6 +12,8 @@ Because those users need to trust the number, I wanted a model that is accurate 
 
 ## The Data
 
+Dataset link : https://www.kaggle.com/datasets/miadul/house-price-prediction-dataset?resource=download
+
 The dataset has 50,000 records and 19 columns, with no missing values and no duplicates. The target is `price`, which ranges from about 91,000 to 1,996,000 with a mean of around 1,030,000.
 
 The 18 features fall into a few groups:
@@ -23,7 +25,6 @@ The 18 features fall into a few groups:
 - **Neighbourhood:** crime rate, population density, and income level (low, mid, high)
 
 I split the data 80/20 into 40,000 training rows and 10,000 test rows, with a fixed random seed.
-Dataset : https://www.kaggle.com/datasets/miadul/house-price-prediction-dataset?resource=download
 
 ## How I Approached It
 
@@ -51,9 +52,7 @@ Since the area-to-price relationship looked linear, I used linear regression as 
 
 **Feature selection.** I compared linear regression on all 20 encoded features against a version that used RFE to keep only the best 10, using 5-fold cross-validation. The full feature set won, with a CV RMSE of about 20,014 against 21,767 for the top-10 version, and a CV MAE of about 15,982 against 17,384. RFE kept area, bedrooms, bathrooms, age, distance, crime rate, the medium and premium location levels, and the low and mid income levels. Dropping the rest (amenities, nearby facilities, floors, population density) made the model about 9% worse on RMSE, so I kept everything.
 
-> **Screenshot to add:** the `cv_results` output that compares "All features" and "top_10_features". Save it as `images/cv_feature_comparison.png`.
-
-![Cross-validation feature set comparison](images/cv_feature_comparison.png)
+<img width="1341" height="138" alt="Screenshot (40)" src="https://github.com/user-attachments/assets/293ad758-588e-499e-9bc9-64e6fd349d9c" />
 
 **Regularization.** I also wanted to know whether Ridge regression would help. I tried it with a default alpha, then ran `RidgeCV` over alphas from 0.001 to 1000 with 5-fold CV (best alpha was 0.1). None of it moved the needle, which I cover below.
 
@@ -61,18 +60,15 @@ Since the area-to-price relationship looked linear, I used linear regression as 
 
 On the 10,000 held-out test records, plain linear regression on all features gave an RMSE of 19,940.85, an MAE of 15,954.17 and an R² of 0.998. Ridge and RidgeCV landed within a fraction of a unit of that on every metric, so regularization made no real difference here. 
 
-> **Screenshot to add:** the comparison DataFrame that shows Linear Regression, Ridge and RidgeCV side by side. Save it as `images/model_comparison.png`.
+<img width="1349" height="308" alt="Screenshot (41)" src="https://github.com/user-attachments/assets/c385e10c-d9a0-4a6e-bbe7-8f814e8b3e87" />
 
-![Model comparison on the test set](images/model_comparison.png)
 
 Against the target I set at the start, an RMSE of 19,941 is far below the 399,295 ceiling. Compared with the average price, that works out to roughly 1.9% for RMSE and 1.5% for MAE (my own calculation from the dataset mean).
 
 I also checked the usual regression diagnostics. Actual versus predicted values follow the diagonal, the residuals show no visible pattern and a fairly constant spread, and the residual distribution is roughly bell-shaped and centred on zero.
 
-> **Screenshot to add:** the actual-vs-predicted plot and the residual plot. Save them as `images/actual_vs_predicted.png` and `images/residuals.png`.
+<img width="1366" height="768" alt="Screenshot (42)" src="https://github.com/user-attachments/assets/9216deda-e68a-4e7e-bece-9969474b09ec" />
 
-![Actual vs predicted prices](images/actual_vs_predicted.png)
-![Residual plot](images/residuals.png)
 
 ## What Drives the Price
 
@@ -105,9 +101,9 @@ Python, pandas, NumPy, scikit-learn (Pipeline, ColumnTransformer, StandardScaler
 ## Project Structure
 
 ```
+├── Screenshots/
 ├── HousePricePrediction.ipynb   # Audit, EDA, modelling and evaluation
-├── house_price_50k.csv          
-├── Screenshots/                      
+├── house_price_50k.csv                                
 └── README.md
 ```
 
