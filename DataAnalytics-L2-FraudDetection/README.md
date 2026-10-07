@@ -144,14 +144,18 @@ DataAnalytics-L2-FraudDetection/
 
 ## How to Run
 
-1. Download `creditcard.csv` from the [Kaggle dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud).
-2. Put it one folder above the notebook (`../creditcard.csv`), or change `DATA_PATH` in the settings cell to where your file is.
-3. Install the libraries:
-
+1. Clone the repo and open the project folder:
 ```bash
-pip install numpy pandas matplotlib seaborn scikit-learn imbalanced-learn jupyter
+   git clone https://github.com/CodeWithNafisat/OIBSIP.git
+   cd OIBSIP/DataAnalytics-L2-FraudDetection
 ```
-
+2. Download `creditcard.csv` from [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) and put it one folder above the notebook (or change `DATA_PATH` in the settings cell).
+3. Install the dependencies:
+```bash
+   pip install numpy pandas matplotlib seaborn scikit-learn imbalanced-learn jupyter
+```
 4. Open `FraudDetection.ipynb` and run all cells.
 
-I used `RANDOM_STATE = 42` everywhere (the split, the CV folds and the models), so you should get the same results.
+All randomness uses `RANDOM_STATE = 42`, so results should match.
+
+```bash
