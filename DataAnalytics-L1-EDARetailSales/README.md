@@ -108,7 +108,7 @@ Python, pandas, NumPy, Matplotlib, Seaborn, SciPy (winsorization) and Jupyter No
 ### 1. Clone the repository
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/CodeWithNafisat/OIBSIP.git
 cd OIBSIP/DataAnalytics-L1-EDARetailSale
 ```
 
@@ -147,7 +147,9 @@ DataAnalytics-L1-EDARetailSale/
 └── screenshots/
 ```
 
-## Author
+## Links
 
-**Nafisat**
-Data Analytics | OIBSIP
+- [Notebook](https://github.com/CodeWithNafisat/OIBSIP/blob/main/DataAnalytics-L1-EDARetailSales/EDA_Retail_Sales.ipynb)
+- [More projects from this internship (OIBSIP)](https://github.com/CodeWithNafisat/OIBSIP)
+- [GitHub profile: CodeWithNafisat](https://github.com/CodeWithNafisat)
+
