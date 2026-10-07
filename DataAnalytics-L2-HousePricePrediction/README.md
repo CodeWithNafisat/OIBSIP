@@ -110,8 +110,8 @@ Python, pandas, NumPy, scikit-learn (Pipeline, ColumnTransformer, StandardScaler
 ## How to Run
 
 ```bash
-git clone <your-repo-url>
-cd <your-repo-folder>
+git clone https://github.com/CodeWithNafisat/OIBSIP.git
+cd OIBSIP/DataAnalytics-L2-HousePricePrediction
 
 pip install pandas numpy scipy seaborn matplotlib scikit-learn jupyter
 
