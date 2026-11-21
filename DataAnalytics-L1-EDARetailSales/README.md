@@ -1,102 +1,155 @@
 # Retail Sales Exploratory Data Analysis
 
-**Turning raw customer and transaction data into revenue, product, customer and regional insights, and clear next steps for the business.**
+**Transforming raw customer and transaction data into actionable insights on revenue performance, customer behaviour, product trends and regional sales.**
 
-I took two messy raw datasets, one of customers and one of transactions, cleaned and merged them, and ran an end-to-end analysis to find out when a retail business earns its revenue, what it sells, who buys, and where. The work covers about 28.6K cleaned transactions and ends with concrete recommendations on seasonal planning, product focus, customer targeting and regional strategy.
+## Project Overview
 
-## The Problem
+This project involved an end-to-end exploratory data analysis of retail customer and transaction data obtained from Kaggle. Using Python, I cleaned and integrated two datasets, conducted statistical and exploratory analysis, identified patterns in sales performance and customer behaviour, and developed interactive Power BI dashboards to communicate findings and support business decision-making.
 
-A retail business needs to know when it sells, what it sells, who is buying, and where the revenue comes from. Raw exports rarely answer those questions directly, so I set out to answer five:
+The analysis focused on understanding revenue trends, customer segments, product performance, geographical sales distribution and seasonal demand.
 
-1. How has revenue changed over time, and is there a seasonal pattern?
-2. Who are the customers, and which segments bring in the most revenue?
-3. Which products and categories perform best, and does selling the most units also mean earning the most revenue?
-4. Which states and cities perform best and worst?
-5. What should the business do next based on these findings?
+## Business Questions
 
-## The Data
+The analysis sought to answer five key business questions:
 
-The dataset was obtained from Kaggle:
+1. How does revenue change over time, and are there identifiable seasonal patterns?
+2. Which customer demographics and segments contribute the most revenue?
+3. Which products and categories generate the highest sales volume and revenue?
+4. Which geographical regions perform best and worst?
+5. What business strategies can be recommended based on the findings?
+
+## Dataset and Sources
 
 [Retail Customer & Transaction Dataset](https://www.kaggle.com/datasets/raghavendragandhi/retail-customer-and-transaction-dataset)
 
+The original dataset contained four tables. For this analysis, I selected two relevant datasets:
+
 There were two source files. `customers.csv` has 5,000 records and 12 columns covering demographics and location, such as age, gender, city, state and preferred channel. `transactions.csv` has 32,295 records and 10 columns covering transaction date, product name and category, quantity, price, discount, store location and payment method.
 
-I joined them on `customer_id`. After cleaning, the final dataset has about 28.6K transactions and is saved as `Cleaned_retail_data.csv`.
+The datasets were integrated using `customer_id`.
 
-## Cleaning and Preparation
+## Data Cleaning and Preparation
 
-Data quality was the hardest part of this project, so most of my decisions were about cleaning without distorting the results.
+Data preparation was performed using Python and Pandas. The process involved profiling, handling missing values, correcting data types, treating outliers and preparing the datasets for analysis.
 
-**Profiling.** Most customer columns had missing values, and some types were wrong: `age` was stored as text and `registration_date` was not a datetime. In the transaction data, every field except ID, customer and date had missing values, each under 3%.
+### 1. Customer Data Cleaning
 
-**Missing values.** I picked the treatment based on the type of variable and the risk of bias:
+- Identified missing values and inconsistencies across customer attributes.
+- Removed records with missing customer IDs because they could not reliably be linked to transaction records.
+- Converted age and date fields to appropriate data types.
+- Standardised categorical text values.
+- Removed non-analytical and personal information, including names, email addresses and street addresses.
+- Retained six analytical columns: customer ID, age, gender, city, state and preferred shopping channel.
 
-- **Age, quantity, price and discount** were filled with the median, since these fields are skewed with extreme values and the median is not pulled around by them.
-- **Gender** was filled with the mode, as it is categorical.
-- **City, state, preferred channel, store location, payment method and product name** were dropped where missing. There were few of them, and I had no reliable way to infer the true value without introducing bias.
-- **Product category** was recovered by mapping from product name, which let me keep rows I would otherwise have lost. Only 19 rows could not be matched, and I dropped those.
+**Result:** I reduced the customer dataset from 5,000 records and 12 columns to 4,699 records and six analytical columns.
 
-**Other preparation.**
+### 2. Transaction Data Cleaning
 
-- I converted data types (age to integer, dates to datetime) and standardized the casing of categorical text.
-- I removed personal and non-analytical columns: name, email, street address, zip code and registration date.
-- I cleaned and validated phone numbers with regex (extension extraction, format standardization, a 10-digit check), then dropped the column because it added nothing analytically.
-- After the left join, I excluded rows with missing customer details, which was 5.5% of the data. I chose exclusion over bulk imputation so that repeated assumed values would not bias the results.
-- Boxplots and summary statistics showed extreme values in quantity, price and age, so I winsorized these at 5% on each tail before calculating revenue.
-- I engineered `revenue` (quantity × price), `year`, `month` (ordered), `quarter` and `age_group`.
+- Profiled missing values and assessed data quality across transaction attributes.
+- Handled missing numerical values using median imputation for quantity, price and discount.
+- Used product names to recover missing product categories through category mapping.
+- Removed records with missing product names and records whose product categories could not be reliably recovered.
+- Standardised categorical values and corrected data types.
+- Identified extreme values in numerical variables using summary statistics and boxplots.
+- Applied winsorization at the 5th and 95th percentiles to quantity, price and age where applicable.
 
-Revenue is calculated from the winsorized values, so the figures below are adjusted numbers, not raw sales totals.
+**Result:** I reduced the transaction dataset from 32,295 records and 10 columns to approximately 30,344 records while retaining the analytical fields required for the project.
+
+### 3. Data Integration and Feature Engineering
+
+- Merged the cleaned customer and transaction datasets using `customer_id`.
+- Excluded records with missing customer details after the left join.
+- Created additional analytical variables, including:
+  - `revenue`: Quantity × Price
+  - `year`: Extracted from transaction date
+  - `month`: Extracted and ordered chronologically
+  - `quarter`: Derived from transaction date
+  - `age_group`: Customer age segmentation.
+
+**Final dataset:** 27,937 records, approximately 28K integrated transaction records.
+
+The revenue analysis used winsorized quantity and price values. Therefore, the reported revenue figures represent adjusted analytical values rather than unmodified raw sales totals.
+
+## Exploratory Data Analysis
 
 ## Analysis
 
 I started with descriptive statistics (mean, median, mode and standard deviation) for the numeric variables. From there I looked at revenue over time by year, month and quarter, then at customers by age, gender and age group. On the product side I looked at the top 10 products by units sold, revenue by category, and quantity against revenue per product. I ran a correlation check of the numeric variables against revenue, and finished with revenue and quantity by state, plus a city-level look at the top state.
 
-## What I Found
+## Key Findings and Business Insights
 
-### Revenue over time
+### 1. Revenue Trends and Seasonality
 
-Revenue grew steadily from 692,785 in 2020 to 7,466,081 in 2024. Then it drops sharply to 1,031,550 in 2025. I did not read that as a real decline, because it could simply be an incomplete year of data, so I would confirm that before forecasting anything.
+- Revenue increased from 692,785 in 2020 to 7,466,081 in 2024.
+- Q4 generated the highest quarterly revenue at 7,454,433, while Q2 recorded the lowest at 3,713,007.
+- November and December were the strongest months, generating 2,900,460 and 3,066,801 respectively.
+- March recorded the lowest monthly revenue at 1,155,325.
+- Revenue dropped to 1,031,550 in 2025. This requires further investigation because the dataset may contain an incomplete year.
 
-There is a clear seasonal pattern. Q4 is the strongest quarter at 7,454,433 and Q2 is the weakest at 3,713,007. December (3,066,801) and November (2,900,460) are the peak months, and March is the lowest at 1,155,325. That points to an end-of-year selling season.
+**Business implication:** The concentration of revenue towards the end of the year highlights the importance of seasonal inventory planning and targeted promotional campaigns.
 
 <img width="1366" height="768" alt="Screenshot (234)" src="https://github.com/user-attachments/assets/ccc8160d-a0f0-487c-9865-05a04253c96e" />
 
-### Customers
+### 2. Customer Analysis
 
-Adults aged 30 to 59 are the core segment, bringing in 15.1M in revenue compared with 6.1M from young adults. I grouped ages as under 30, 30 to 59 and 60+, and the 60+ group had no records, so the customer base sits in the younger and middle-aged bands.
+- Customers aged 30–59 contributed the highest revenue at 15.1M.
+- Young adults contributed approximately 6.1M.
+- Female customers generated 10.8M compared with 9.7M from male customers.
+- Adult women represented the highest-revenue demographic segment, contributing 7.7M.
 
-Female customers generate more revenue than male customers (10.8M against 9.7M), and adult women are the top segment at 7.7M.
-
-
-### Products
-
-Furniture is the top revenue category at 4.7M, followed by smartphones at 4.0M and laptops at 3.0M.
-
-Selling the most units does not mean earning the most. The iPhone 13 leads on units sold (1,061) with 847,855 in revenue, but the Bed Frame earns the most revenue (1,023,041) from only 938 units.
-
-Price is the main driver of revenue. It correlates almost perfectly with revenue, while quantity, discount and age show little to no relationship. Since revenue is defined as quantity × price, part of that result comes from how revenue is built, but it still shows price varies far more than the other inputs.
+**Business implication:** Customer segmentation can support more targeted marketing campaigns, customer engagement and promotional strategies.
 
 <img width="1366" height="768" alt="Screenshot (43)" src="https://github.com/user-attachments/assets/db8609f6-92e4-4bed-bf74-31ab9fc2117f" />
 
+### 3. Product and Category Performance
 
-### Regions
+- Furniture generated the highest category revenue at 4.7M.
+- Smartphones followed at 4.0M, while laptops generated 3.0M.
+- The iPhone 13 recorded the highest sales volume at 1,061 units, generating 847,855 in revenue.
+- Bed Frame generated the highest individual product revenue at 1,023,041 from 938 units.
 
-California is the top state on both revenue (3.9M) and quantity (6,563), followed by Texas at 2.8M in revenue. Massachusetts is the weakest, with 600,608 in revenue and 1,055 units.
+The analysis demonstrated that products with the highest sales volume do not necessarily generate the highest revenue.
 
-Inside California, the two leading cities lead on different measures: San Diego has the highest revenue (855,505) while Los Angeles has the highest volume (1,440 units).
+Price showed a very strong correlation with revenue. However, this relationship must be interpreted in the context of the revenue calculation, which is derived from quantity multiplied by price.
+
+**Business implication:** Product strategy should consider both sales volume and revenue contribution rather than relying exclusively on units sold.
+
+### 4. Geographical Sales Performance
+
+- California led geographical performance, generating 3.9M in revenue and 6,563 units sold.
+- Texas followed with 2.8M in revenue.
+- Massachusetts recorded the lowest performance among the compared states, generating 600,608 in revenue and 1,055 units sold.
+- Within California, San Diego generated the highest revenue at 855,505, while Los Angeles recorded the highest sales volume at 1,440 units.
+
+**Business implication:** Regional sales strategies should account for differences in revenue generation and sales volume across locations.
 
 <img width="1366" height="768" alt="Screenshot (45)" src="https://github.com/user-attachments/assets/05907991-6979-4140-abbd-e5a67ca0afb0" />
 
+## Power BI Dashboard
 
-## Recommendations
+To complement the Python analysis, I developed interactive Power BI dashboards to visualise sales performance, customer demographics, product trends and geographical distribution.
 
-1. **Plan for Q4.** Build up inventory and marketing ahead of November and December, the highest-revenue months.
-2. **Prioritize high-value categories.** Furniture, smartphones and laptops bring in the most revenue and deserve the most attention.
-3. **Target adult customers,** especially adult women, with tailored promotions, since they are the top revenue segment.
-4. **Build on strong markets.** Keep investing in California and Texas, and look into what is holding back weaker states like Massachusetts.
-5. **Tailor the California strategy by city.** San Diego is the place to push for revenue, and Los Angeles for volume.
-6. **Investigate the 2025 drop** before using these numbers for forecasts.
+The dashboards allow users to explore key business metrics, compare performance across categories and identify patterns using interactive filters.
+
+### Dashboard Preview
+
+<img width="958" height="543" alt="Screenshot (243)" src="https://github.com/user-attachments/assets/f48b989a-e44d-4ad2-b9d8-520365e24da9" />
+
+
+<img width="951" height="531" alt="Screenshot (244)" src="https://github.com/user-attachments/assets/97be851b-627a-4aaf-acdd-0bc1845ca665" />
+
+
+## Business Recommendations
+
+Based on the findings, the following actions are recommended:
+
+1. **Strengthen seasonal planning:** Increase inventory readiness and marketing activities ahead of November and December.
+2. **Prioritise high-revenue categories:** Focus product strategy on Furniture, Smartphones and Laptops.
+3. **Improve customer targeting:** Develop targeted campaigns for customers aged 30–59, particularly high-contributing adult female customers.
+4. **Optimise regional strategies:** Maintain focus on strong-performing markets such as California and Texas while investigating underperforming regions.
+5. **Differentiate geographical objectives:** Prioritise San Diego for revenue generation and Los Angeles for sales volume.
+6. **Investigate the 2025 revenue decline:** Verify data completeness before interpreting the decline or using it for forecasting.
+
 
 ## Tech Stack
 
@@ -139,12 +192,13 @@ Cleaned_retail_data.csv
 ```text
 DataAnalytics-L1-EDARetailSale/
 │
-├── README.md
-├── Retail_Sales_EDA.ipynb
-├── customers.csv
-├── transactions.csv
+├── screenshots/
 ├── Cleaned_retail_data.csv
-└── screenshots/
+├── customers.csv
+├── Retail_Sales_EDA.ipynb
+├── README.md
+├── RetailSalesDashboard
+└── transactions.csv
 ```
 
 ## Links
@@ -152,4 +206,8 @@ DataAnalytics-L1-EDARetailSale/
 - [Notebook](https://github.com/CodeWithNafisat/OIBSIP/blob/main/DataAnalytics-L1-EDARetailSales/EDA_Retail_Sales.ipynb)
 - [More projects from this internship (OIBSIP)](https://github.com/CodeWithNafisat/OIBSIP)
 - [GitHub profile: CodeWithNafisat](https://github.com/CodeWithNafisat)
+
+---
+
+*This project demonstrates an end-to-end analytical workflow, from raw data preparation and integration to exploratory analysis, business intelligence reporting and data-driven recommendations.*
 
